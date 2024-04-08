@@ -230,7 +230,7 @@ def test_poker(number):
 
 
 if __name__ == '__main__':
-    # todo do zmiany - testowe wartości
+    # do zmiany - testowe wartości
     p = 5167
     q = 4567
     s = 4  # seed_size (ile cyfr)
