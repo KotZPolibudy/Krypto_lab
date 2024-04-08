@@ -1,7 +1,7 @@
-import random
-import math
 import hashlib
 import time
+import pandas as pd
+import matplotlib as plt
 
 
 def MD5(jawny):
@@ -13,47 +13,23 @@ def SH_1(jawny):
 
 
 def SH_2(jawny):
-    # return hashlib.sha256(jawny.encode('utf-8'))
+    return hashlib.sha256(jawny.encode('utf-8'))
     # return hashlib.sha384(jawny.encode('utf-8'))
     # return hashlib.sha224(jawny.encode('utf-8'))
-    return hashlib.sha512(jawny.encode('utf-8'))
+    # return hashlib.sha512(jawny.encode('utf-8'))
 
 
 def SH_3(jawny):
     # return hashlib.sha3_224(jawny.encode('utf-8'))
-    # return hashlib.sha3_256(jawny.encode('utf-8'))
+    return hashlib.sha3_256(jawny.encode('utf-8'))
     # return hashlib.sha3_384(jawny.encode('utf-8'))
-    return hashlib.sha3_512(jawny.encode('utf-8'))
-
-
-def main_pierwszy():
-    print("Słowo\tDługość Słowa\tAlgorytm\tCzas\tDługość Wyniku\tWynik(hash bajtami)")
-    for slowo in DANE:
-        T_start = time.perf_counter_ns()
-        wynMD = MD5(slowo)
-        T_MD = time.perf_counter_ns() - T_start
-
-        T_start = time.perf_counter_ns()
-        wynSH1 = SH_1(slowo)
-        T_SH1 = time.perf_counter_ns() - T_start
-
-        T_start = time.perf_counter_ns()
-        wynSH2 = SH_2(slowo)
-        T_SH2 = time.perf_counter_ns() - T_start
-
-        T_start = time.perf_counter_ns()
-        wynSH3 = SH_3(slowo)
-        T_SH3 = time.perf_counter_ns() - T_start
-
-        print(f"{slowo}\t{len(slowo)}\tMD5\t\t{T_MD}\t{len(wynMD.hexdigest())}\t{wynMD.hexdigest()}")
-        print(f"{slowo}\t{len(slowo)}\tSH1\t\t{T_SH1}\t{len(wynSH1.hexdigest())}\t{wynSH1.hexdigest()}")
-        print(f"{slowo}\t{len(slowo)}\tSH2\t\t{T_SH2}\t{len(wynSH2.hexdigest())}\t{wynSH2.hexdigest()}")
-        print(f"{slowo}\t{len(slowo)}\tSH3\t\t{T_SH3}\t{len(wynSH3.hexdigest())}\t{wynSH3.hexdigest()}")
+    # return hashlib.sha3_512(jawny.encode('utf-8'))
 
 
 def check_kolizji(lista_hashy):
     pom = [[bin(ord(hhash[0])), bin(ord(hhash[1]))] for hhash in lista_hashy]
     print(pom)
+    pom_str_lst = []
 
     for x in pom:
         pom_str_lst = []
@@ -70,27 +46,57 @@ def check_kolizji(lista_hashy):
         print(a)
 
 
-
-
-
 def check_SAC(hash1, hash2):
-    pass
+    bh1 = bin(hash1)
+    bh2 = bin(hash2)
+    c = 0
+    n = len(bh1)
+    if n != len(bh2):
+        print("SAC - niezgodne długości hashy")
+        return True
+    for i in range(n):
+        if bh1[n] == bh2[n]:
+            c += 1
+        # else:
+        # continue
+    return c / n
+    # c/n to będzie proc zgodnych bitów, powinno być około 0,5
 
 
 def main():
     lista_hashyy = []
+    # md5df = pd.DataFrame(columns=["Algorytm", "Słowo_Jawne", "Długość_słowa", "Czas wykonania", "Długość_Skrótu", "Skrót"])
+    # sh1df = pd.DataFrame(columns=["Algorytm", "Słowo_Jawne", "Długość_słowa", "Czas wykonania", "Długość_Skrótu", "Skrót"])
+    # sh2df = pd.DataFrame(columns=["Algorytm", "Słowo_Jawne", "Długość_słowa", "Czas wykonania", "Długość_Skrótu", "Skrót"])
+    # sh3df = pd.DataFrame(columns=["Algorytm", "Słowo_Jawne", "Długość_słowa", "Czas wykonania", "Długość_Skrótu", "Skrót"])
+    CZASY = []
+    d = {}
     for slowo in DANE:
         T_start = time.perf_counter_ns()
         wynMD = MD5(slowo)
         T_MD = time.perf_counter_ns() - T_start
         lista_hashyy.append(wynMD.hexdigest())
-        print(f"{slowo}\t{len(slowo)}\tMD5\t\t{T_MD}\t{len(wynMD.hexdigest())}\t{wynMD.hexdigest()}")
+        CZASY.append(T_MD)
+    d = {"Slowo_Jawne": DANE, "Długość_słowa": [len(slowo) for slowo in DANE], "Czas wykonania" : CZASY, "Długość_Skrótu": [len(h) for h in lista_hashyy], "Skrót": lista_hashyy}
+    md5df = pd.DataFrame(d)
+    print(md5df)
+    print(lista_hashyy)
+    check_kolizji(lista_hashyy)
 
+    lista_hashyy = []
+    CZASY = []
+    d = {}
     for slowo in DANE:
         T_start = time.perf_counter_ns()
         wynSH1 = SH_1(slowo)
         T_SH1 = time.perf_counter_ns() - T_start
-        print(f"{slowo}\t{len(slowo)}\tSH1\t\t{T_SH1}\t{len(wynSH1.hexdigest())}\t{wynSH1.hexdigest()}")
+        lista_hashyy.append(wynSH1.hexdigest())
+        CZASY.append(T_SH1)
+        # print(f"{slowo}\t{len(slowo)}\tSH1\t\t{T_SH1}\t{len(wynSH1.hexdigest())}\t{wynSH1.hexdigest()}")
+    d = {"Slowo_Jawne": DANE, "Długość_słowa": [len(slowo) for slowo in DANE], "Czas wykonania": CZASY,
+             "Długość_Skrótu": [len(h) for h in lista_hashyy], "Skrót": lista_hashyy}
+    sh1df = pd.DataFrame(d)
+    print(sh1df)
 
     for slowo in DANE:
         T_start = time.perf_counter_ns()
@@ -98,24 +104,20 @@ def main():
         T_SH2 = time.perf_counter_ns() - T_start
         print(f"{slowo}\t{len(slowo)}\tSH2\t\t{T_SH2}\t{len(wynSH2.hexdigest())}\t{wynSH2.hexdigest()}")
 
-
     for slowo in DANE:
         T_start = time.perf_counter_ns()
         wynSH3 = SH_3(slowo)
         T_SH3 = time.perf_counter_ns() - T_start
         print(f"{slowo}\t{len(slowo)}\tSH3\t\t{T_SH3}\t{len(wynSH3.hexdigest())}\t{wynSH3.hexdigest()}")
 
-
     print(lista_hashyy)
     check_kolizji(lista_hashyy)
 
 
-
-
-DANE = ["Kot", "Kou", "Kto", "Ala", "Aba", "Wysokogórska_Wyprawa", "Gdzie?", "Everest", "Smoki", "Gobliny", "Inne Baśniowe stwory", "Kontrowersyjne opinie", ""]
+DANE = ["Kot", "Kou", "Kto", "Ala", "Aba", "Wysokogórska_Wyprawa", "Gdzie?", "Everest", "Smoki", "Gobliny",
+        "Inne Baśniowe stwory", "Kontrowersyjne opinie", "lol następny jest pusty", "", "A ten będzie mieć spację", " ", "Tak, koniec pomysłów."]
 if __name__ == '__main__':
     main()
-
 
 """
 3.
@@ -140,8 +142,3 @@ pierwotnie wejściowe do funkcji MD5 z konkretnych danych wyjściowych
 
 
 """
-
-
-
-
-
