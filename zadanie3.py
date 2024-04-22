@@ -77,11 +77,12 @@ def main():
         T_MD = time.perf_counter_ns() - T_start
         lista_hashyy.append(wynMD.hexdigest())
         CZASY.append(T_MD)
-    d = {"Slowo_Jawne": DANE, "Długość_słowa": [len(slowo) for slowo in DANE], "Czas wykonania" : CZASY, "Długość_Skrótu": [len(h) for h in lista_hashyy], "Skrót": lista_hashyy}
+    d = {"Slowo_Jawne": DANE, "Długość_słowa": [len(slowo) for slowo in DANE], "Czas wykonania": CZASY,
+         "Długość_Skrótu": [len(h) for h in lista_hashyy], "Skrót": lista_hashyy}
     md5df = pd.DataFrame(d)
     print(md5df)
-    print(lista_hashyy)
-    check_kolizji(lista_hashyy)
+    # print(lista_hashyy)
+    # check_kolizji(lista_hashyy)
 
     lista_hashyy = []
     CZASY = []
@@ -94,28 +95,29 @@ def main():
         CZASY.append(T_SH1)
         # print(f"{slowo}\t{len(slowo)}\tSH1\t\t{T_SH1}\t{len(wynSH1.hexdigest())}\t{wynSH1.hexdigest()}")
     d = {"Slowo_Jawne": DANE, "Długość_słowa": [len(slowo) for slowo in DANE], "Czas wykonania": CZASY,
-             "Długość_Skrótu": [len(h) for h in lista_hashyy], "Skrót": lista_hashyy}
+         "Długość_Skrótu": [len(h) for h in lista_hashyy], "Skrót": lista_hashyy}
     sh1df = pd.DataFrame(d)
-    print(sh1df)
+    # print(sh1df)
 
     for slowo in DANE:
         T_start = time.perf_counter_ns()
         wynSH2 = SH_2(slowo)
         T_SH2 = time.perf_counter_ns() - T_start
-        print(f"{slowo}\t{len(slowo)}\tSH2\t\t{T_SH2}\t{len(wynSH2.hexdigest())}\t{wynSH2.hexdigest()}")
+        # print(f"{slowo}\t{len(slowo)}\tSH2\t\t{T_SH2}\t{len(wynSH2.hexdigest())}\t{wynSH2.hexdigest()}")
 
     for slowo in DANE:
         T_start = time.perf_counter_ns()
         wynSH3 = SH_3(slowo)
         T_SH3 = time.perf_counter_ns() - T_start
-        print(f"{slowo}\t{len(slowo)}\tSH3\t\t{T_SH3}\t{len(wynSH3.hexdigest())}\t{wynSH3.hexdigest()}")
+        # print(f"{slowo}\t{len(slowo)}\tSH3\t\t{T_SH3}\t{len(wynSH3.hexdigest())}\t{wynSH3.hexdigest()}")
 
-    print(lista_hashyy)
-    check_kolizji(lista_hashyy)
+    # print(lista_hashyy)
+    # check_kolizji(lista_hashyy)
 
 
 DANE = ["Kot", "Kou", "Kto", "Ala", "Aba", "Wysokogórska_Wyprawa", "Gdzie?", "Everest", "Smoki", "Gobliny",
-        "Inne Baśniowe stwory", "Kontrowersyjne opinie", "lol następny jest pusty", "", "A ten będzie mieć spację", " ", "Tak, koniec pomysłów."]
+        "Inne Baśniowe stwory", "Kontrowersyjne opinie", "lol następny jest pusty", "", "A ten będzie mieć spację", " ",
+        "Tak, koniec pomysłów."]
 if __name__ == '__main__':
     main()
 
