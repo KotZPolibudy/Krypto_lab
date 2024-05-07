@@ -25,7 +25,7 @@ def SH_3(jawny):
     # return hashlib.sha3_384(jawny.encode('utf-8'))
     # return hashlib.sha3_512(jawny.encode('utf-8'))
 
-
+"""
 def check_kolizji(lista_hashy):
     pom = [[bin(ord(hhash[0])), bin(ord(hhash[1]))] for hhash in lista_hashy]
     print(pom)
@@ -61,6 +61,66 @@ def check_SAC(hash1, hash2):
         # continue
     return c / n
     # c/n to będzie proc zgodnych bitów, powinno być około 0,5
+"""
+
+def check_kolizji_na_bitach(Lista_skrotow, n):
+    # print("Przed ordem", Lista_skrotow)
+    Lista_skrotow = [''.join(format(ord(char), '08b') for char in string) for string in Lista_skrotow]
+    # print("Po ord", Lista_skrotow)
+    Lista_skrotow = [skrot[:n] for skrot in Lista_skrotow]
+    # print("Po skroceniu", Lista_skrotow)
+    d = {}
+    for skrot in Lista_skrotow:
+        if skrot in d:
+            d[skrot] += 1
+        else:
+            d[skrot] = 1
+
+    suma = 0
+    for key in d.keys():
+        if d[key] > 1:
+            print("Kolizja na: ", key, "ilość kolizji = ", d[key])
+            suma += d[key]
+    print("SUMARYCZNIE KOLIZJI DLA n= ", n, "to ", suma, " na ", len(Lista_skrotow), " hashy")
+
+
+def check_SAC():
+    print("Kryterium SAC dla przykładów:")
+    # slowo1 = "Kot"
+    # slowo2 = "Kou"
+    slowo1 = "figa"
+    slowo2 = "giga"
+    hash1 = MD5(slowo1)
+    hash2 = MD5(slowo2)
+    hash1 = hash1.hexdigest()
+    hash2 = hash2.hexdigest()
+    print(hash1)
+    print(hash2)
+    binhash1 = ''.join(format(ord(char), '08b') for char in hash1)
+    binhash2 = ''.join(format(ord(char), '08b') for char in hash2)
+    print(binhash1)
+    print(binhash2)
+    n = len(binhash1)
+    wyn = ""
+    for i in range(n):
+        if (binhash1[i] == binhash2[i]):
+            wyn += "0"
+        else:
+            wyn += "1"
+    print(wyn)
+
+    pomd = {}
+    pomd["0"] = 0
+    pomd["1"] = 1
+    for i in range(len(wyn)):
+        pomd[wyn[i]] += 1
+    print("n = ", n)
+    print(pomd)
+
+
+
+
+
 
 
 def main():
@@ -82,6 +142,7 @@ def main():
     md5df = pd.DataFrame(d)
     print(md5df)
     # print(lista_hashyy)
+    lista_do_kolizji = lista_hashyy
     # check_kolizji(lista_hashyy)
 
     lista_hashyy = []
@@ -113,6 +174,13 @@ def main():
 
     # print(lista_hashyy)
     # check_kolizji(lista_hashyy)
+    # check_kolizji_na_bitach(lista_do_kolizji, 12)
+    print(lista_do_kolizji)
+    for i in range(12, 0, -1):
+        print("Ilość bitów: ", i)
+        check_kolizji_na_bitach(lista_do_kolizji, i)
+    check_SAC()
+
 
 
 DANE = ["Kot", "Kou", "Kto", "Ala", "Aba", "Wysokogórska_Wyprawa", "Gdzie?", "Everest", "Smoki", "Gobliny",

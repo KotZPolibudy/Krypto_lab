@@ -9,6 +9,38 @@ from time import time
 from Crypto.Cipher import AES
 
 
+def plot_time_all(time_all, filename=None):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    time_all.plot(kind='bar', ax=ax, width=0.8)
+    ax.set_ylabel('Time (s)')
+    ax.set_xlabel('File')
+    ax.set_title('Encryption and Decryption Time for Different Files and Modes')
+    ax.legend(title='Mode')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.show()
+    if filename is not None:
+        plt.savefig(filename)
+    else:
+        plt.show()
+
+def plot_results(df):
+    cmap = np.array(cm.get_cmap('Paired', 12)(np.arange(10)))
+    cmap = np.vstack([cmap, cmap, cmap])
+    labels = ["txt 1.59KB", "pdf 722KB", "zip 7.55MB", "mp4 761MB"]
+    fig, ax1 = plt.subplots(ncols=1)
+    hatch = ['/', '//', 'x', 'xx', '\\', '\\\\', '.', '..', 'o', 'oo', 'O']
+    hatch = flatten(zip(hatch, hatch, hatch))
+    bar = df.plot(kind='bar', color=cmap, hatch=hatch, ax=ax1)
+    for i, b in enumerate(bar.patches):
+        b.set_hatch(hatch[i])
+    ax1.set_xticklabels(labels, rotation=0)
+    ax1.minorticks_on()
+    ax1.grid(True, which='minor', ls='--')
+    ax1.grid(False, axis='x', which='both')
+    ax1.legend()
+
+
 def cipher_params(cipher, mode):
     if mode in [AES.MODE_CBC]:
         return dict(iv=cipher.iv)
@@ -172,6 +204,11 @@ for file in files:
         decrypted = c2.decrypt(encrypted)
         t2 = time() - t2
 
+        if t1 == 0:
+            t1 = 0.0000001
+        if t2 == 0:
+            t2 = 0.0000001
+
         decrypted = strip(decrypted)
         encr_time.loc[file, name] = t1
         decr_time.loc[file, name] = t2
@@ -194,7 +231,7 @@ for mode, name in zip(modes, modenames):
     encrypted = c1.encrypt(pad(test))
 
     encrypted = bytearray(encrypted)
-    encrypted[120] = 0
+    encrypted[12] = 0
 
     c2 = AES.new(key, mode, **cipher_params(c1, mode))
     decrypted = strip(c2.decrypt(encrypted))
@@ -211,3 +248,19 @@ enc = encrypt_aes_cbc(test_txt, key)
 print(enc)
 dec = decrypt_aes_cbc(enc, key)
 print(dec)
+
+"""
+# todo -bo to jeszcze nie działa dobrze
+speed_enc = sizes / encr_time.mean(axis=1)
+speed_dec = sizes / decr_time.mean(axis=1)
+speed_all = pd.DataFrame({'Encrypt': speed_enc, 'Decrypt': speed_dec}, index=files)
+
+plot_results(speed_all)
+plt.ylabel('speed (MB/s)')
+plt.show()
+"""
+
+plot_time_all(time_all, filename='plot.png')
+plot_time_all(time_all, None)
+
+time_all.to_csv("time_all.txt", sep='\t')
